@@ -291,11 +291,11 @@ func (n *NodeLabeller) prepareLabels(node *v1.Node) map[string]string {
 	}
 
 	if n.SEV.Supported == "yes" {
-		newLabels[kubevirtv1.SEVLabel] = ""
+		newLabels[kubevirtv1.SEVLabel] = "true"
 	}
 
 	if n.SEV.SupportedES == "yes" {
-		newLabels[kubevirtv1.SEVESLabel] = ""
+		newLabels[kubevirtv1.SEVESLabel] = "true"
 	}
 
 	if n.SEV.SupportedSNP == "yes" {
