@@ -1053,13 +1053,58 @@ type Entry struct {
 //BEGIN LaunchSecurity --------------------
 
 type LaunchSecurity struct {
-	Type            string `xml:"type,attr"`
-	Cbitpos         string `xml:"cbitpos,omitempty"`
-	ReducedPhysBits string `xml:"reducedPhysBits,omitempty"`
-	Policy          string `xml:"policy,omitempty"`
-	DHCert          string `xml:"dhCert,omitempty"`
-	Session         string `xml:"session,omitempty"`
+	// Type is the type of launch security, e.g. "sev" or "sev-snp"
+	Type string             `xml:"type,attr"`
+	AMD  *AMDLaunchSecurity `xml:",inline,omitempty"`
 }
+
+type AMDLaunchSecurity struct {
+	// SEV and SEV-ES settings
+	// DHCert is a base64 encoded certificate used for Diffie-Hellman key exchange
+	// Session is a base64 encoded session key used for encryption
+	DHCert  string `xml:"dhCert,omitempty"`
+	Session string `xml:"session,omitempty"`
+
+	// SEV-SNP settings
+	// Note: Cbitpos and ReducedPhysBits are filled out by libvirt
+
+	// VCEK is the Verification Code Encryption Key, used to verify the integrity of the VM
+	// +optional
+	VCEK string `xml:"vcek,attr,omitempty"`
+	// HostData is the host data used for attestation
+	// +optional
+	HostData string `xml:"hostdata,omitempty"`
+	// AuthorKey is the author key used to sign the VCEK
+	// +optional
+	AuthorKey string `xml:"authorkey"`
+	// Cbitpos is the C-bit position, used to indicate the location of the C-bit in the VCEK. This option is autofilled by libvirt
+	// +optional
+	Cbitpos string `xml:"cbitpos,omitempty"`
+	// ReducedPhysBits is the reduced physical address bits, used to limit the physical address space
+	// +optional
+	ReducedPhysBits string `xml:"reducedPhysBits,omitempty"`
+	// Policy is a 64-byte policy string used to define the SEV-SNP launch security policy
+	// +optional
+	Policy string `xml:"policy,omitempty"`
+	// IdBlock is the ID block used for attestation
+	// +optional
+	IdBlock string `xml:"idBlock,omitempty"`
+	// IdAuth is the ID authentication used for attestation
+	// +optional
+	IdAuth string `xml:"idAuth,omitempty"`
+}
+
+//type LaunchSecurity struct {
+//	Type      string `xml:"type,attr"`
+//	AuthorKey string `xml:"authorKey,attr,omitempty"`
+//	VCEK      string `xml:"vcek,attr,omitempty"`
+//
+//	Cbitpos         string `xml:"cbitpos,omitempty"`
+//	ReducedPhysBits string `xml:"reducedPhysBits,omitempty"`
+//	Policy          string `xml:"policy,omitempty"`
+//	DHCert          string `xml:"dhCert,omitempty"`
+//	Session         string `xml:"session,omitempty"`
+//}
 
 //END LaunchSecurity --------------------
 //BEGIN Clock --------------------

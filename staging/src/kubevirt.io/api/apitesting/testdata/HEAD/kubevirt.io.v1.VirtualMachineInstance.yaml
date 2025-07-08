@@ -404,13 +404,22 @@ spec:
       supplementalPoolThreadCount: 4294967269
     ioThreadsPolicy: ioThreadsPolicyValue
     launchSecurity:
-      sev:
-        attestation: {}
-        dhCert: dhCertValue
-        policy:
-          encryptedState: true
-          secureNestedPaging: true
-        session: sessionValue
+      amd:
+        sev:
+          attestation: {}
+          dhCert: dhCertValue
+          policy:
+            encryptedState: true
+          session: sessionValue
+        snp:
+          authorKey: true
+          enabled: true
+          guestVisibleWorkarounds: guestVisibleWorkaroundsValue
+          hostData: hostDataValue
+          idAuth: idAuthValue
+          idBlock: idBlockValue
+          policy: policyValue
+          vcek: true
     machine:
       type: typeValue
     memory:

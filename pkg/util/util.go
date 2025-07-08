@@ -85,28 +85,28 @@ func IsVFIOVMI(vmi *v1.VirtualMachineInstance) bool {
 
 // Check if a VMI spec requests AMD SEV
 func IsSEVVMI(vmi *v1.VirtualMachineInstance) bool {
-	return vmi.Spec.Domain.LaunchSecurity != nil && vmi.Spec.Domain.LaunchSecurity.SEV != nil
+	return vmi.Spec.Domain.LaunchSecurity != nil && vmi.Spec.Domain.LaunchSecurity.AMD.SEV != nil
 }
 
 // Check if a VMI spec requests AMD SEV-ES
 func IsSEVESVMI(vmi *v1.VirtualMachineInstance) bool {
 	return IsSEVVMI(vmi) &&
-		vmi.Spec.Domain.LaunchSecurity.SEV.Policy != nil &&
-		vmi.Spec.Domain.LaunchSecurity.SEV.Policy.EncryptedState != nil &&
-		*vmi.Spec.Domain.LaunchSecurity.SEV.Policy.EncryptedState
+		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy != nil &&
+		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState != nil &&
+		*vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState
 }
 
 // Check if a VMI spec requests AMD SEV-SNP
 func IsSEVSNPVMI(vmi *v1.VirtualMachineInstance) bool {
 	return IsSEVVMI(vmi) &&
-		vmi.Spec.Domain.LaunchSecurity.SEV.Policy != nil &&
-		vmi.Spec.Domain.LaunchSecurity.SEV.Policy.SecureNestedPaging != nil &&
-		*vmi.Spec.Domain.LaunchSecurity.SEV.Policy.SecureNestedPaging
+		vmi.Spec.Domain.LaunchSecurity.AMD.SNP != nil &&
+		vmi.Spec.Domain.LaunchSecurity.AMD.SNP.Enabled != nil &&
+		*vmi.Spec.Domain.LaunchSecurity.AMD.SNP.Enabled
 }
 
 // Check if a VMI spec requests SEV with attestation
 func IsSEVAttestationRequested(vmi *v1.VirtualMachineInstance) bool {
-	return IsSEVVMI(vmi) && vmi.Spec.Domain.LaunchSecurity.SEV.Attestation != nil
+	return IsSEVVMI(vmi) && vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Attestation != nil
 }
 
 // NeedVirtioNetDevice checks whether a VMI requires the presence of the "virtio" net device.

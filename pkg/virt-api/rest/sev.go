@@ -118,7 +118,7 @@ func (app *SubresourceAPIApp) SEVSetupSessionHandler(request *restful.Request, r
 		if !kutil.IsSEVAttestationRequested(vmi) {
 			return errors.NewConflict(v1.Resource("virtualmachineinstance"), vmi.Name, fmt.Errorf(vmiNoAttestationErr))
 		}
-		sev := vmi.Spec.Domain.LaunchSecurity.SEV
+		sev := vmi.Spec.Domain.LaunchSecurity.AMD.SEV
 		if sev.Session != "" || sev.DHCert != "" {
 			return errors.NewConflict(v1.Resource("virtualmachineinstance"), vmi.Name, fmt.Errorf("Session already defined"))
 		}
@@ -133,7 +133,7 @@ func (app *SubresourceAPIApp) SEVSetupSessionHandler(request *restful.Request, r
 		return
 	}
 
-	oldSEV := vmi.Spec.Domain.LaunchSecurity.SEV
+	oldSEV := vmi.Spec.Domain.LaunchSecurity.AMD.SEV
 	newSEV := oldSEV.DeepCopy()
 	newSEV.Session = opts.Session
 	newSEV.DHCert = opts.DHCert

@@ -2990,7 +2990,9 @@ var _ = Describe("Validating VMICreate Admitter", func() {
 		BeforeEach(func() {
 			vmi = api.NewMinimalVMI("testvmi")
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-				SEV: &v1.SEV{},
+				AMD: &v1.AMDLaunchSecurity{
+					SEV: &v1.SEV{},
+				},
 			}
 			vmi.Spec.Domain.Firmware = &v1.Firmware{
 				Bootloader: &v1.Bootloader{
@@ -3057,14 +3059,14 @@ var _ = Describe("Validating VMICreate Admitter", func() {
 
 		It("should accept SEV attestation with start strategy 'Paused'", func() {
 			startStrategy := v1.StartStrategyPaused
-			vmi.Spec.Domain.LaunchSecurity.SEV.Attestation = &v1.SEVAttestation{}
+			vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Attestation = &v1.SEVAttestation{}
 			vmi.Spec.StartStrategy = &startStrategy
 			causes := ValidateVirtualMachineInstanceSpec(k8sfield.NewPath("fake"), &vmi.Spec, config)
 			Expect(causes).To(BeEmpty())
 		})
 
 		It("should reject SEV attestation without start strategy 'Paused'", func() {
-			vmi.Spec.Domain.LaunchSecurity.SEV.Attestation = &v1.SEVAttestation{}
+			vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Attestation = &v1.SEVAttestation{}
 			causes := ValidateVirtualMachineInstanceSpec(k8sfield.NewPath("fake"), &vmi.Spec, config)
 			Expect(causes).To(HaveLen(1))
 			Expect(causes[0].Field).To(ContainSubstring("launchSecurity"))

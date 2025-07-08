@@ -628,7 +628,9 @@ var _ = Describe("GetMemoryOverhead calculation", func() {
 	When("the vmi requests AMD SEV", func() {
 		BeforeEach(func() {
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-				SEV: &v1.SEV{},
+				AMD: &v1.AMDLaunchSecurity{
+					SEV: &v1.SEV{},
+				},
 			}
 		})
 

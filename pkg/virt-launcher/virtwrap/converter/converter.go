@@ -1466,22 +1466,65 @@ func Convert_v1_VirtualMachineInstance_To_api_Domain(vmi *v1.VirtualMachineInsta
 		return err
 	}
 
-	// Set SEV launch security parameters: https://libvirt.org/formatdomain.html#launch-security
+	// Set SEV and SEV-SNP launch security parameters: https://libvirt.org/formatdomain.html#launch-security
 	if c.UseLaunchSecurity {
-		sevPolicyBits := launchsecurity.SEVPolicyToBits(vmi.Spec.Domain.LaunchSecurity.SEV.Policy)
-		sevTypeStr := "sev"
-		if vmi.Spec.Domain.LaunchSecurity.SEV.Policy != nil &&
-			vmi.Spec.Domain.LaunchSecurity.SEV.Policy.SecureNestedPaging != nil &&
-			*vmi.Spec.Domain.LaunchSecurity.SEV.Policy.SecureNestedPaging {
-			sevTypeStr = "sev-snp"
+		//sevPolicyBits := launchsecurity.SEVPolicyToBits(vmi.Spec.Domain.LaunchSecurity.SEV.Policy)
+		//sevTypeStr := "sev"
+
+		launchSec := vmi.Spec.Domain.LaunchSecurity
+
+		if launchSec.AMD.SEV == nil && launchSec.AMD.SNP != nil && *launchSec.AMD.SNP.Enabled {
+			snpPolicyBits := launchsecurity.SEVSNPPolicyToBits(vmi.Spec.Domain.LaunchSecurity.AMD.SNP)
+			domain.Spec.LaunchSecurity = &api.LaunchSecurity{
+				Type: "sev-snp",
+			}
+
+			if launchSec.AMD.SNP.Policy != nil {
+				domain.Spec.LaunchSecurity.AMD.Policy = *launchSec.AMD.SNP.Policy
+			} else {
+				// Use default policy
+				domain.Spec.LaunchSecurity.AMD.Policy = "0x" + strconv.FormatUint(uint64(snpPolicyBits), 16)
+			}
+			// If AuthorKey is set, IDAuth and IDBlock must be provided
+			if *launchSec.AMD.SNP.AuthorKey && launchSec.AMD.SNP.IDAuth != nil && launchSec.AMD.SNP.IDBlock != nil {
+				domain.Spec.LaunchSecurity.AMD.AuthorKey = boolToYesNo(launchSec.AMD.SNP.AuthorKey, false)
+				domain.Spec.LaunchSecurity.AMD.IdBlock = *launchSec.AMD.SNP.IDBlock
+				domain.Spec.LaunchSecurity.AMD.IdAuth = *launchSec.AMD.SNP.IDAuth
+			}
+			if launchSec.AMD.SNP.VCEK != nil {
+				domain.Spec.LaunchSecurity.AMD.VCEK = boolToYesNo(launchSec.AMD.SNP.VCEK, false)
+			}
+			if launchSec.AMD.SNP.HostData != nil {
+				domain.Spec.LaunchSecurity.AMD.HostData = *launchSec.AMD.SNP.HostData
+			}
+		} else if launchSec.AMD.SEV != nil && *launchSec.AMD.SEV.Policy.EncryptedState {
+			sevPolicyBits := launchsecurity.SEVPolicyToBits(launchSec.AMD.SEV.Policy)
+			domain.Spec.LaunchSecurity = &api.LaunchSecurity{
+				Type: "sev",
+				AMD: &api.AMDLaunchSecurity{
+					Policy: "0x" + strconv.FormatUint(uint64(sevPolicyBits), 16),
+				},
+			}
+			if launchSec.AMD.SEV.DHCert != "" {
+				domain.Spec.LaunchSecurity.AMD.DHCert = launchSec.AMD.SEV.DHCert
+			}
+			if launchSec.AMD.SEV.Session != "" {
+				domain.Spec.LaunchSecurity.AMD.Session = launchSec.AMD.SEV.Session
+			}
 		}
+
+		//		if vmi.Spec.Domain.LaunchSecurity.SEV.Policy != nil &&
+		//			vmi.Spec.Domain.LaunchSecurity.SEV.Policy.SecureNestedPaging != nil &&
+		//			*vmi.Spec.Domain.LaunchSecurity.SEV.Policy.SecureNestedPaging {
+		//			sevTypeStr = "sev-snp"
+		//		}
 		// Cbitpos and ReducedPhysBits will be filled automatically by libvirt from the domain capabilities
-		domain.Spec.LaunchSecurity = &api.LaunchSecurity{
-			Type:    sevTypeStr,
-			Policy:  "0x" + strconv.FormatUint(uint64(sevPolicyBits), 16),
-			DHCert:  vmi.Spec.Domain.LaunchSecurity.SEV.DHCert,
-			Session: vmi.Spec.Domain.LaunchSecurity.SEV.Session,
-		}
+		//domain.Spec.LaunchSecurity = &api.LaunchSecurity{
+		//	Type:    sevTypeStr,
+		//	Policy:  "0x" + strconv.FormatUint(uint64(sevPolicyBits), 16),
+		//	DHCert:  vmi.Spec.Domain.LaunchSecurity.SEV.DHCert,
+		//	Session: vmi.Spec.Domain.LaunchSecurity.SEV.Session,
+		//}
 		controllerDriver = &api.ControllerDriver{
 			IOMMU: "on",
 		}

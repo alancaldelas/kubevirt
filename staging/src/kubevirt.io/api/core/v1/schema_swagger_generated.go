@@ -387,7 +387,14 @@ func (DiskTarget) SwaggerDoc() map[string]string {
 
 func (LaunchSecurity) SwaggerDoc() map[string]string {
 	return map[string]string{
-		"sev": "AMD Secure Encrypted Virtualization (SEV).",
+		"amd": "AMD Launch Security features.\n+optional",
+	}
+}
+
+func (AMDLaunchSecurity) SwaggerDoc() map[string]string {
+	return map[string]string{
+		"sev": "AMD Secure Encrypted Virtualization (SEV).\n+optional",
+		"snp": "AMD SEV-SNP flags defined by the SEV-SNP specifications.\n+optional",
 	}
 }
 
@@ -402,8 +409,20 @@ func (SEV) SwaggerDoc() map[string]string {
 
 func (SEVPolicy) SwaggerDoc() map[string]string {
 	return map[string]string{
-		"encryptedState":     "SEV-ES is required.\nDefaults to false.\n+optional",
-		"secureNestedPaging": "SEV-SNP is required.\nDefaults to false.\n+optional",
+		"encryptedState": "SEV-ES is required.\nDefaults to false.\n+optional",
+	}
+}
+
+func (SEVSNP) SwaggerDoc() map[string]string {
+	return map[string]string{
+		"enabled":                 "SEV-SNP is required.\nDefaults to false.\n+optional",
+		"policy":                  "64-bit SEV-SNP Policy\n+optional",
+		"guestVisibleWorkarounds": "16-byte base64 encoded guest hypervisor-defined workarounds.\n+optional",
+		"idBlock":                 "96-byte base64 encoded ID Block Structure.\n+optional",
+		"idAuth":                  "4096-byte base64 encoded ID Auth Structure.\n+optional",
+		"hostData":                "32 byte base64 encoded measurement of the guest.\n+optional",
+		"authorKey":               "Whether idAuth contains AUTHOR_KEY field\n+optional",
+		"vcek":                    "Whether idAuth contains VCEK field for attestation\n+optional",
 	}
 }
 

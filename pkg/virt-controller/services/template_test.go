@@ -1239,7 +1239,7 @@ var _ = Describe("Template", func() {
 				})
 
 				It("should add SEV node label selector with SEV workload", func() {
-					vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{SEV: &v1.SEV{}}
+					vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{AMD: &v1.AMDLaunchSecurity{SEV: &v1.SEV{}}}
 
 					pod, err := svc.RenderLaunchManifest(vmi)
 					Expect(err).ToNot(HaveOccurred())
@@ -1256,9 +1256,11 @@ var _ = Describe("Template", func() {
 
 				It("should add SEV and SEV-ES node label selector with SEV-ES workload", func() {
 					vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-						SEV: &v1.SEV{
-							Policy: &v1.SEVPolicy{
-								EncryptedState: pointer.P(true),
+						AMD: &v1.AMDLaunchSecurity{
+							SEV: &v1.SEV{
+								Policy: &v1.SEVPolicy{
+									EncryptedState: pointer.P(true),
+								},
 							},
 						},
 					}
@@ -1271,9 +1273,9 @@ var _ = Describe("Template", func() {
 
 				It("should add SEV and SEV-SNP node label selector with SEV-SNP workload", func() {
 					vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-						SEV: &v1.SEV{
-							Policy: &v1.SEVPolicy{
-								SecureNestedPaging: pointer.P(true),
+						AMD: &v1.AMDLaunchSecurity{
+							SNP: &v1.SEVSNP{
+								Enabled: pointer.P(true),
 							},
 						},
 					}
@@ -1286,8 +1288,10 @@ var _ = Describe("Template", func() {
 
 				DescribeTable("should not add SEV-ES or SEV-SNP node label selector", func(policy *v1.SEVPolicy) {
 					vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-						SEV: &v1.SEV{
-							Policy: policy,
+						AMD: &v1.AMDLaunchSecurity{
+							SEV: &v1.SEV{
+								Policy: policy,
+							},
 						},
 					}
 					pod, err := svc.RenderLaunchManifest(vmi)
@@ -4824,7 +4828,9 @@ var _ = Describe("Template", func() {
 				Spec: v1.VirtualMachineInstanceSpec{
 					Domain: v1.DomainSpec{
 						LaunchSecurity: &v1.LaunchSecurity{
-							SEV: &v1.SEV{},
+							AMD: &v1.AMDLaunchSecurity{
+								SEV: &v1.SEV{},
+							},
 						},
 					},
 				},

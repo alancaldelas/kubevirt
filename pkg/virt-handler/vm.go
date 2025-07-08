@@ -3122,7 +3122,7 @@ func (c *VirtualMachineController) adjustResources(vmi *v1.VirtualMachineInstanc
 
 func (c *VirtualMachineController) shouldWaitForSEVAttestation(vmi *v1.VirtualMachineInstance) bool {
 	if util.IsSEVAttestationRequested(vmi) {
-		sev := vmi.Spec.Domain.LaunchSecurity.SEV
+		sev := vmi.Spec.Domain.LaunchSecurity.AMD.SEV
 		// Wait for the session parameters to be provided
 		return sev.Session == "" || sev.DHCert == ""
 	}

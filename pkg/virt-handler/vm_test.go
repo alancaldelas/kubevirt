@@ -2784,7 +2784,7 @@ var _ = Describe("VirtualMachineInstance", func() {
 		It("should not be allowed to live-migrate if the VMI uses SEV", func() {
 			vmi := api2.NewMinimalVMI("testvmi")
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-				SEV: &v1.SEV{},
+				AMD: &v1.AMDLaunchSecurity{},
 			}
 
 			condition, isBlockMigration := controller.calculateLiveMigrationCondition(vmi)

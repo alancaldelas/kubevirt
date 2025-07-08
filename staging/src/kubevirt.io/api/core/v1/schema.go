@@ -717,8 +717,18 @@ type DiskTarget struct {
 }
 
 type LaunchSecurity struct {
+	// AMD Launch Security features.
+	// +optional
+	AMD *AMDLaunchSecurity `json:"amd,omitempty"`
+}
+
+type AMDLaunchSecurity struct {
 	// AMD Secure Encrypted Virtualization (SEV).
+	// +optional
 	SEV *SEV `json:"sev,omitempty"`
+	// AMD SEV-SNP flags defined by the SEV-SNP specifications.
+	// +optional
+	SNP *SEVSNP `json:"snp,omitempty"`
 }
 
 type SEV struct {
@@ -739,10 +749,34 @@ type SEVPolicy struct {
 	// Defaults to false.
 	// +optional
 	EncryptedState *bool `json:"encryptedState,omitempty"`
+}
+
+type SEVSNP struct {
 	// SEV-SNP is required.
 	// Defaults to false.
 	// +optional
-	SecureNestedPaging *bool `json:"secureNestedPaging,omitempty"`
+	Enabled *bool `json:"enabled"`
+	// 64-bit SEV-SNP Policy
+	// +optional
+	Policy *string `json:"policy,omitempty"`
+	// 16-byte base64 encoded guest hypervisor-defined workarounds.
+	// +optional
+	GuestVisibleWorkarounds *string `json:"guestVisibleWorkarounds,omitempty"`
+	// 96-byte base64 encoded ID Block Structure.
+	// +optional
+	IDBlock *string `json:"idBlock,omitempty"`
+	// 4096-byte base64 encoded ID Auth Structure.
+	// +optional
+	IDAuth *string `json:"idAuth,omitempty"`
+	// 32 byte base64 encoded measurement of the guest.
+	// +optional
+	HostData *string `json:"hostData,omitempty"`
+	// Whether idAuth contains AUTHOR_KEY field
+	// +optional
+	AuthorKey *bool `json:"authorKey,omitempty"`
+	// Whether idAuth contains VCEK field for attestation
+	// +optional
+	VCEK *bool `json:"vcek,omitempty"`
 }
 
 type SEVAttestation struct {

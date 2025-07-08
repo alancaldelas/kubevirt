@@ -56,7 +56,8 @@ var _ = Describe("[sig-compute]AMD Secure Encrypted Virtualization (SEV)", decor
 		const secureBoot = false
 		sevOptions := []libvmi.Option{
 			libvmi.WithUefi(secureBoot),
-			libvmi.WithSEV(withES, withSNP),
+			libvmi.WithSEV(withES),
+			libvmi.WithSEVSNP(withSNP),
 		}
 		opts = append(sevOptions, opts...)
 		return libvmifact.NewFedora(opts...)

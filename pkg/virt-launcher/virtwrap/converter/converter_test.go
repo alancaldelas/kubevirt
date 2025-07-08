@@ -3210,7 +3210,7 @@ var _ = Describe("Converter", func() {
 				*v1.DefaultPodNetwork(), secondaryNetwork,
 			}
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-				SEV: &v1.SEV{},
+				AMD: &v1.AMDLaunchSecurity{},
 			}
 			vmi.Spec.Domain.Features = &v1.Features{
 				SMM: &v1.FeatureState{
@@ -3237,15 +3237,17 @@ var _ = Describe("Converter", func() {
 			Expect(domain).ToNot(BeNil())
 			Expect(domain.Spec.LaunchSecurity).ToNot(BeNil())
 			Expect(domain.Spec.LaunchSecurity.Type).To(Equal("sev"))
-			Expect(domain.Spec.LaunchSecurity.Policy).To(Equal("0x" + strconv.FormatUint(uint64(sev.SEVPolicyNoDebug), 16)))
+			Expect(domain.Spec.LaunchSecurity.AMD.Policy).To(Equal("0x" + strconv.FormatUint(uint64(sev.SEVPolicyNoDebug), 16)))
 		})
 
 		It("should set LaunchSecurity domain element with 'sev' type with 'NoDebug' and 'EncryptedState' policy bits", func() {
 			// VMI with SEV-ES
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-				SEV: &v1.SEV{
-					Policy: &v1.SEVPolicy{
-						EncryptedState: pointer.P(true),
+				AMD: &v1.AMDLaunchSecurity{
+					SEV: &v1.SEV{
+						Policy: &v1.SEVPolicy{
+							EncryptedState: pointer.P(true),
+						},
 					},
 				},
 			}
@@ -3253,30 +3255,24 @@ var _ = Describe("Converter", func() {
 			Expect(domain).ToNot(BeNil())
 			Expect(domain.Spec.LaunchSecurity).ToNot(BeNil())
 			Expect(domain.Spec.LaunchSecurity.Type).To(Equal("sev"))
-			Expect(domain.Spec.LaunchSecurity.Policy).To(Equal("0x" + strconv.FormatUint(uint64(sev.SEVPolicyNoDebug|sev.SEVPolicyEncryptedState), 16)))
+			Expect(domain.Spec.LaunchSecurity.AMD.Policy).To(Equal("0x" + strconv.FormatUint(uint64(sev.SEVPolicyNoDebug|sev.SEVPolicyEncryptedState), 16)))
 		})
 
 		It("should set LaunchSecurity domain element with 'sev-snp' type with 'Reserved' policy bits", func() {
-			// VMI with SEV-SNP
-			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-				SEV: &v1.SEV{
-					Policy: &v1.SEVPolicy{
-						SecureNestedPaging: pointer.P(true),
-					},
-				},
-			}
+
 			domain := vmiToDomain(vmi, c)
 			Expect(domain).ToNot(BeNil())
 			Expect(domain.Spec.LaunchSecurity).ToNot(BeNil())
 			Expect(domain.Spec.LaunchSecurity.Type).To(Equal("sev-snp"))
-			Expect(domain.Spec.LaunchSecurity.Policy).To(Equal("0x" + strconv.FormatUint(uint64(sev.SNPPolicySmt|sev.SNPPolicyReserved), 16)))
+			Expect(domain.Spec.LaunchSecurity.AMD.Policy).To(Equal("0x" + strconv.FormatUint(uint64(sev.SNPPolicySmt|sev.SNPPolicyReserved), 16)))
 		})
 
 		It("should set memory backing with memfd", func() {
+			// VMI with SEV-SNP
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-				SEV: &v1.SEV{
-					Policy: &v1.SEVPolicy{
-						SecureNestedPaging: pointer.P(true),
+				AMD: &v1.AMDLaunchSecurity{
+					SNP: &v1.SEVSNP{
+						Enabled: pointer.P(true),
 					},
 				},
 			}

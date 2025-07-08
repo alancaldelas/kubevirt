@@ -19,13 +19,14 @@ package libvmi
 import v1 "kubevirt.io/api/core/v1"
 
 // WithSEV adds `launchSecurity` with `sev`.
-func WithSEV(isESEnabled bool, isSNPEnabled bool) Option {
+func WithSEV(isESEnabled bool) Option {
 	return func(vmi *v1.VirtualMachineInstance) {
 		vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-			SEV: &v1.SEV{
-				Policy: &v1.SEVPolicy{
-					EncryptedState:     &isESEnabled,
-					SecureNestedPaging: &isSNPEnabled,
+			AMD: &v1.AMDLaunchSecurity{
+				SEV: &v1.SEV{
+					Policy: &v1.SEVPolicy{
+						EncryptedState: &isESEnabled,
+					},
 				},
 			},
 		}
@@ -39,9 +40,25 @@ func WithSEVAttestation() Option {
 		if vmi.Spec.Domain.LaunchSecurity == nil {
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{}
 		}
-		if vmi.Spec.Domain.LaunchSecurity.SEV == nil {
-			vmi.Spec.Domain.LaunchSecurity.SEV = &v1.SEV{}
+		if vmi.Spec.Domain.LaunchSecurity.AMD == nil {
+			vmi.Spec.Domain.LaunchSecurity.AMD = &v1.AMDLaunchSecurity{}
 		}
-		vmi.Spec.Domain.LaunchSecurity.SEV.Attestation = &v1.SEVAttestation{}
+		if vmi.Spec.Domain.LaunchSecurity.AMD.SEV == nil {
+			vmi.Spec.Domain.LaunchSecurity.AMD.SEV = &v1.SEV{}
+		}
+		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Attestation = &v1.SEVAttestation{}
+	}
+}
+
+// WithSEVSNP adds launchsecurity with 'sev-snp'
+func WithSEVSNP(isSNPEnabled bool) Option {
+	return func(vmi *v1.VirtualMachineInstance) {
+		vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
+			AMD: &v1.AMDLaunchSecurity{
+				SNP: &v1.SEVSNP{
+					Enabled: &isSNPEnabled,
+				},
+			},
+		}
 	}
 }

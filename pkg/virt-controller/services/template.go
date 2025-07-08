@@ -1607,7 +1607,7 @@ func hasHugePages(vmi *v1.VirtualMachineInstance) bool {
 // Check if a VMI spec requests AMD SEV-ES
 func isSEVESVMI(vmi *v1.VirtualMachineInstance) bool {
 	return util.IsSEVVMI(vmi) &&
-		vmi.Spec.Domain.LaunchSecurity.SEV.Policy != nil &&
-		vmi.Spec.Domain.LaunchSecurity.SEV.Policy.EncryptedState != nil &&
-		*vmi.Spec.Domain.LaunchSecurity.SEV.Policy.EncryptedState
+		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy != nil &&
+		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState != nil &&
+		*vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState
 }
