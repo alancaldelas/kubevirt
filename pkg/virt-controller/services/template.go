@@ -716,7 +716,7 @@ func (t *templateService) newNodeSelectorRenderer(vmi *v1.VirtualMachineInstance
 		log.Log.V(4).Info("Add SEV node label selector")
 		opts = append(opts, WithSEVSelector())
 	}
-	if isSEVESVMI(vmi) {
+	if util.IsSEVESVMI(vmi) {
 		log.Log.V(4).Info("Add SEV-ES node label selector")
 		opts = append(opts, WithSEVESSelector())
 	}
@@ -1605,9 +1605,9 @@ func hasHugePages(vmi *v1.VirtualMachineInstance) bool {
 }
 
 // Check if a VMI spec requests AMD SEV-ES
-func isSEVESVMI(vmi *v1.VirtualMachineInstance) bool {
-	return util.IsSEVVMI(vmi) &&
-		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy != nil &&
-		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState != nil &&
-		*vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState
-}
+//func isSEVESVMI(vmi *v1.VirtualMachineInstance) bool {
+//	return util.IsSEVVMI(vmi) &&
+//		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy != nil &&
+//		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState != nil &&
+//		*vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState
+//}

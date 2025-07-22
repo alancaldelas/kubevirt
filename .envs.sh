@@ -9,4 +9,4 @@ export FEATURE_GATES=WorkloadEncryptionSEV
 export DOCKER_PREFIX=occ-quay.apps.sno.oset.amd.com/alan/kubepod
 
 # Set the image name
-export DOCKER_TAG=2.0.0
+export DOCKER_TAG=2.0.1

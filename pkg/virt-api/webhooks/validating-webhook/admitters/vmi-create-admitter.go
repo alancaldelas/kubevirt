@@ -563,7 +563,7 @@ func validateLaunchSecurity(field *k8sfield.Path, spec *v1.VirtualMachineInstanc
 			Message: fmt.Sprintf("%s feature gate is not enabled in kubevirt-config", featuregate.WorkloadEncryptionSEV),
 			Field:   field.Child("launchSecurity").String(),
 		})
-	} else if launchSecurity != nil && launchSecurity.AMD.SEV != nil {
+	} else if launchSecurity != nil && launchSecurity.SEV != nil {
 		firmware := spec.Domain.Firmware
 		if !efiBootEnabled(firmware) {
 			causes = append(causes, metav1.StatusCause{
@@ -580,7 +580,7 @@ func validateLaunchSecurity(field *k8sfield.Path, spec *v1.VirtualMachineInstanc
 		}
 
 		startStrategy := spec.StartStrategy
-		if launchSecurity.AMD.SEV.Attestation != nil && (startStrategy == nil || *startStrategy != v1.StartStrategyPaused) {
+		if launchSecurity.SEV.Attestation != nil && (startStrategy == nil || *startStrategy != v1.StartStrategyPaused) {
 			causes = append(causes, metav1.StatusCause{
 				Type:    metav1.CauseTypeFieldValueInvalid,
 				Message: fmt.Sprintf("SEV attestation requires VMI StartStrategy '%s'", v1.StartStrategyPaused),

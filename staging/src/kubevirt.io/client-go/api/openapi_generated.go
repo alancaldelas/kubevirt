@@ -331,7 +331,6 @@ func GetOpenAPIDefinitions(ref common.ReferenceCallback) map[string]common.OpenA
 		"kubevirt.io/api/clone/v1beta1.VirtualMachineCloneStatus":                                    schema_kubevirtio_api_clone_v1beta1_VirtualMachineCloneStatus(ref),
 		"kubevirt.io/api/clone/v1beta1.VirtualMachineCloneTemplateFilters":                           schema_kubevirtio_api_clone_v1beta1_VirtualMachineCloneTemplateFilters(ref),
 		"kubevirt.io/api/core/v1.ACPI":                                                               schema_kubevirtio_api_core_v1_ACPI(ref),
-		"kubevirt.io/api/core/v1.AMDLaunchSecurity":                                                  schema_kubevirtio_api_core_v1_AMDLaunchSecurity(ref),
 		"kubevirt.io/api/core/v1.AccessCredential":                                                   schema_kubevirtio_api_core_v1_AccessCredential(ref),
 		"kubevirt.io/api/core/v1.AccessCredentialSecretSource":                                       schema_kubevirtio_api_core_v1_AccessCredentialSecretSource(ref),
 		"kubevirt.io/api/core/v1.AddVolumeOptions":                                                   schema_kubevirtio_api_core_v1_AddVolumeOptions(ref),
@@ -17582,32 +17581,6 @@ func schema_kubevirtio_api_core_v1_ACPI(ref common.ReferenceCallback) common.Ope
 	}
 }
 
-func schema_kubevirtio_api_core_v1_AMDLaunchSecurity(ref common.ReferenceCallback) common.OpenAPIDefinition {
-	return common.OpenAPIDefinition{
-		Schema: spec.Schema{
-			SchemaProps: spec.SchemaProps{
-				Type: []string{"object"},
-				Properties: map[string]spec.Schema{
-					"sev": {
-						SchemaProps: spec.SchemaProps{
-							Description: "AMD Secure Encrypted Virtualization (SEV).",
-							Ref:         ref("kubevirt.io/api/core/v1.SEV"),
-						},
-					},
-					"snp": {
-						SchemaProps: spec.SchemaProps{
-							Description: "AMD SEV-SNP flags defined by the SEV-SNP specifications.",
-							Ref:         ref("kubevirt.io/api/core/v1.SEVSNP"),
-						},
-					},
-				},
-			},
-		},
-		Dependencies: []string{
-			"kubevirt.io/api/core/v1.SEV", "kubevirt.io/api/core/v1.SEVSNP"},
-	}
-}
-
 func schema_kubevirtio_api_core_v1_AccessCredential(ref common.ReferenceCallback) common.OpenAPIDefinition {
 	return common.OpenAPIDefinition{
 		Schema: spec.Schema{
@@ -22046,17 +22019,23 @@ func schema_kubevirtio_api_core_v1_LaunchSecurity(ref common.ReferenceCallback) 
 			SchemaProps: spec.SchemaProps{
 				Type: []string{"object"},
 				Properties: map[string]spec.Schema{
-					"amd": {
+					"sev": {
 						SchemaProps: spec.SchemaProps{
-							Description: "AMD Launch Security features.",
-							Ref:         ref("kubevirt.io/api/core/v1.AMDLaunchSecurity"),
+							Description: "AMD Launch Security features. AMD Secure Encrypted Virtualization (SEV).",
+							Ref:         ref("kubevirt.io/api/core/v1.SEV"),
+						},
+					},
+					"snp": {
+						SchemaProps: spec.SchemaProps{
+							Description: "AMD SEV-SNP flags defined by the SEV-SNP specifications.",
+							Ref:         ref("kubevirt.io/api/core/v1.SEVSNP"),
 						},
 					},
 				},
 			},
 		},
 		Dependencies: []string{
-			"kubevirt.io/api/core/v1.AMDLaunchSecurity"},
+			"kubevirt.io/api/core/v1.SEV", "kubevirt.io/api/core/v1.SEVSNP"},
 	}
 }
 
@@ -24068,16 +24047,9 @@ func schema_kubevirtio_api_core_v1_SEVSNP(ref common.ReferenceCallback) common.O
 			SchemaProps: spec.SchemaProps{
 				Type: []string{"object"},
 				Properties: map[string]spec.Schema{
-					"enabled": {
-						SchemaProps: spec.SchemaProps{
-							Description: "SEV-SNP is required. Defaults to false.",
-							Type:        []string{"boolean"},
-							Format:      "",
-						},
-					},
 					"policy": {
 						SchemaProps: spec.SchemaProps{
-							Description: "64-bit SEV-SNP Policy",
+							Description: "64-bit SEV-SNP Guest Policy",
 							Type:        []string{"string"},
 							Format:      "",
 						},
@@ -24105,14 +24077,14 @@ func schema_kubevirtio_api_core_v1_SEVSNP(ref common.ReferenceCallback) common.O
 					},
 					"hostData": {
 						SchemaProps: spec.SchemaProps{
-							Description: "32 byte base64 encoded measurement of the guest.",
+							Description: "32-byte base64 encoded user-defined blob to provide to the guest.",
 							Type:        []string{"string"},
 							Format:      "",
 						},
 					},
 					"authorKey": {
 						SchemaProps: spec.SchemaProps{
-							Description: "Whether idAuth contains AUTHOR_KEY field",
+							Description: "Whether the guest is allowed to use VCEK for attestation reports. Set to false to disable VCEK usage.",
 							Type:        []string{"boolean"},
 							Format:      "",
 						},
@@ -24120,6 +24092,13 @@ func schema_kubevirtio_api_core_v1_SEVSNP(ref common.ReferenceCallback) common.O
 					"vcek": {
 						SchemaProps: spec.SchemaProps{
 							Description: "Whether idAuth contains VCEK field for attestation",
+							Type:        []string{"boolean"},
+							Format:      "",
+						},
+					},
+					"kernelHashes": {
+						SchemaProps: spec.SchemaProps{
+							Description: "Optional attribute to indicate whether the hashes of the kernel, and command line should be included in the measurement done by the firmware.",
 							Type:        []string{"boolean"},
 							Format:      "",
 						},

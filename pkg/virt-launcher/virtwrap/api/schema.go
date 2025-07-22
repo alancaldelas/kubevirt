@@ -1054,42 +1054,45 @@ type Entry struct {
 
 type LaunchSecurity struct {
 	// Type is the type of launch security, e.g. "sev" or "sev-snp"
-	Type string             `xml:"type,attr"`
-	AMD  *AMDLaunchSecurity `xml:",inline,omitempty"`
-}
+	Type string `xml:"type,attr"`
 
-type AMDLaunchSecurity struct {
 	// SEV and SEV-ES settings
 	// DHCert is a base64 encoded certificate used for Diffie-Hellman key exchange
 	// Session is a base64 encoded session key used for encryption
 	DHCert  string `xml:"dhCert,omitempty"`
 	Session string `xml:"session,omitempty"`
 
-	// SEV-SNP settings
-	// Note: Cbitpos and ReducedPhysBits are filled out by libvirt
+	// Libvirt Attrs
+	// VCEK indicates whether the guest can choose VCEK for attestation reports. Set to false to disable VCEK usage.
+	// +optional
+	VCEK bool `xml:"vcek,attr,omitempty"`
+	// AuthorKey indicates whether idAuth element contains the AUTHOR_KEY field
+	// +optional
+	AuthorKey bool `xml:"authorKey,attr,omitempty"`
+	// KernelHashes indicates whether the hashes of the kernel, ramdisk and command line should be included in the measurement done by the firmware. This is only valid if using direct kernel boot.
+	// +optional
+	KernelHashes bool `xml:"kernelHashes,attr,omitempty"`
 
-	// VCEK is the Verification Code Encryption Key, used to verify the integrity of the VM
+	// Libvirt elements
+	// HostData is a 32-byte base64-encoded user-defined blob to provide to the guest
 	// +optional
-	VCEK string `xml:"vcek,attr,omitempty"`
-	// HostData is the host data used for attestation
-	// +optional
-	HostData string `xml:"hostdata,omitempty"`
-	// AuthorKey is the author key used to sign the VCEK
-	// +optional
-	AuthorKey string `xml:"authorkey"`
-	// Cbitpos is the C-bit position, used to indicate the location of the C-bit in the VCEK. This option is autofilled by libvirt
+	HostData string `xml:"hostData,omitempty"`
+	// Cbitpos is the C-bit (encryption bit) location in guest page table entry. This option is autofilled by libvirt
 	// +optional
 	Cbitpos string `xml:"cbitpos,omitempty"`
-	// ReducedPhysBits is the reduced physical address bits, used to limit the physical address space
+	// ReducedPhysBits is the physical address bit reduction. This option is autofilled by libvirt
 	// +optional
 	ReducedPhysBits string `xml:"reducedPhysBits,omitempty"`
-	// Policy is a 64-byte policy string used to define the SEV-SNP launch security policy
+	// Policy is the guest policy (4-byte for SEV, 64-bit for SEV-SNP)
 	// +optional
 	Policy string `xml:"policy,omitempty"`
-	// IdBlock is the ID block used for attestation
+	// GuestVisibleWorkarounds is a 16-byte base64-encoded blob for hypervisor-defined workarounds (SEV-SNP only)
+	// +optional
+	GuestVisibleWorkarounds string `xml:"guestVisibleWorkarounds,omitempty"`
+	// IdBlock is a 96-byte base64-encoded ID Block Structure (SEV-SNP only)
 	// +optional
 	IdBlock string `xml:"idBlock,omitempty"`
-	// IdAuth is the ID authentication used for attestation
+	// IdAuth is a 4096-byte base64-encoded ID Authentication Information Structure (SEV-SNP only)
 	// +optional
 	IdAuth string `xml:"idAuth,omitempty"`
 }

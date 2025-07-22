@@ -1,0 +1,37 @@
+apiVersion: kubevirt.io/v1
+kind: VirtualMachineInstance
+metadata:
+  name: sev-snp-vm
+spec:
+  domain:
+    firmware:
+      bootloader:
+        efi:
+          secureBoot: false
+    launchSecurity:
+      snp:
+        policy: "0x00030000"
+    resources:
+      requests:
+        memory: 2Gi
+    devices:
+      disks:
+      - name: containerdisk
+        disk:
+          bus: virtio
+      - name: cloudinitdisk
+        disk:
+          bus: virtio
+  volumes:
+  - name: containerdisk
+    containerDisk:
+      image: quay.io/containerdisks/fedora 
+  - name: cloudinitdisk
+    cloudInitNoCloud:
+      userData: |-
+        #cloud-config
+        chpasswd:
+          list: |
+            root:linux
+          expire: False
+      

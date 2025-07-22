@@ -116,11 +116,13 @@ mkdir -p "${HOME}/.docker/secrets"
 volumes="$volumes -v ${HOME}/.docker/secrets:/root/.docker/secrets:ro${selinux_bind_options}"
 
 # Use a bind-mount to expose docker/podman auth file to the container
-if [[ $KUBEVIRT_CRI = podman* ]] && [[ -f "${XDG_RUNTIME_DIR}/containers/auth.json" ]]; then
-    volumes="$volumes --mount type=bind,source=${XDG_RUNTIME_DIR}/containers/auth.json,target=/root/.docker/config.json,readonly"
+if [[ $KUBEVIRT_CRI = podman* ]] && [[ -f "/run/user/1000/containers/auth.json" ]]; then
+    echo "Found the auth.json file..."
+    volumes="$volumes --mount type=bind,source=/run/user/1000/containers/auth.json,target=/root/.docker/config.json,readonly"
 elif [[ -f "${HOME}/.docker/config.json" && "$(cat ${HOME}/.docker/config.json | jq 'has("credHelpers")')" != "true" ]]; then
     volumes="$volumes --mount type=bind,source=${HOME}/.docker/config.json,target=/root/.docker/config.json,readonly"
 fi
+echo $volumes
 
 # add custom docker certs, if needed
 if [ -n "$DOCKER_CA_CERT_FILE" ] && [ -f "$DOCKER_CA_CERT_FILE" ]; then

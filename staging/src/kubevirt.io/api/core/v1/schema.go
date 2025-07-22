@@ -718,11 +718,6 @@ type DiskTarget struct {
 
 type LaunchSecurity struct {
 	// AMD Launch Security features.
-	// +optional
-	AMD *AMDLaunchSecurity `json:"amd,omitempty"`
-}
-
-type AMDLaunchSecurity struct {
 	// AMD Secure Encrypted Virtualization (SEV).
 	// +optional
 	SEV *SEV `json:"sev,omitempty"`
@@ -752,11 +747,7 @@ type SEVPolicy struct {
 }
 
 type SEVSNP struct {
-	// SEV-SNP is required.
-	// Defaults to false.
-	// +optional
-	Enabled *bool `json:"enabled"`
-	// 64-bit SEV-SNP Policy
+	// 64-bit SEV-SNP Guest Policy
 	// +optional
 	Policy *string `json:"policy,omitempty"`
 	// 16-byte base64 encoded guest hypervisor-defined workarounds.
@@ -768,15 +759,17 @@ type SEVSNP struct {
 	// 4096-byte base64 encoded ID Auth Structure.
 	// +optional
 	IDAuth *string `json:"idAuth,omitempty"`
-	// 32 byte base64 encoded measurement of the guest.
+	// 32-byte base64 encoded user-defined blob to provide to the guest.
 	// +optional
 	HostData *string `json:"hostData,omitempty"`
-	// Whether idAuth contains AUTHOR_KEY field
+	// Whether the guest is allowed to use VCEK for attestation reports. Set to false to disable VCEK usage.
 	// +optional
 	AuthorKey *bool `json:"authorKey,omitempty"`
 	// Whether idAuth contains VCEK field for attestation
 	// +optional
 	VCEK *bool `json:"vcek,omitempty"`
+	// Optional attribute to indicate whether the hashes of the kernel, and command line should be included in the measurement done by the firmware.
+	KernelHashes *bool `json:"kernelHashes,omitempty"`
 }
 
 type SEVAttestation struct {

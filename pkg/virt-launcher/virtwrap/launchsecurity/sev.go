@@ -48,9 +48,7 @@ func SEVPolicyToBits(policy *v1.SEVPolicy) uint {
 
 func SEVSNPPolicyToBits(policy *v1.SEVSNP) uint {
 	if policy != nil {
-		if policy.Enabled != nil && *policy.Enabled {
-			return SNPPolicySmt | SNPPolicyReserved
-		}
+		return SNPPolicySmt | SNPPolicyReserved
 	}
 	return 0
 }

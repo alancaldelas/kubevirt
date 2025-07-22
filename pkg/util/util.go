@@ -84,29 +84,102 @@ func IsVFIOVMI(vmi *v1.VirtualMachineInstance) bool {
 }
 
 // Check if a VMI spec requests AMD SEV
+//func IsSEVVMI(vmi *v1.VirtualMachineInstance) bool {
+//	return vmi.Spec.Domain.LaunchSecurity != nil && vmi.Spec.Domain.LaunchSecurity.SEV != nil
+//}
+
 func IsSEVVMI(vmi *v1.VirtualMachineInstance) bool {
-	return vmi.Spec.Domain.LaunchSecurity != nil && vmi.Spec.Domain.LaunchSecurity.AMD.SEV != nil
+	logger := log.DefaultLogger()
+
+	if vmi.Spec.Domain.LaunchSecurity == nil {
+		logger.Infof("VMI %s/%s: LaunchSecurity is nil", vmi.Namespace, vmi.Name)
+		return false
+	}
+
+	if vmi.Spec.Domain.LaunchSecurity.SEV == nil {
+		logger.Infof("VMI %s/%s: LaunchSecurity.SEV is nil", vmi.Namespace, vmi.Name)
+		return false
+	}
+
+	if vmi.Spec.Domain.LaunchSecurity.SNP == nil {
+		logger.Infof("VMI %s/%s: LaunchSecurity.SNP is nil", vmi.Namespace, vmi.Name)
+		return false
+	}
+
+	logger.Infof("VMI %s/%s: Detected as SEV VMI", vmi.Namespace, vmi.Name)
+	return true
 }
 
 // Check if a VMI spec requests AMD SEV-ES
+//func IsSEVESVMI(vmi *v1.VirtualMachineInstance) bool {
+//	return IsSEVVMI(vmi) &&
+//		vmi.Spec.Domain.LaunchSecurity.SEV.Policy != nil &&
+//		vmi.Spec.Domain.LaunchSecurity.SEV.Policy.EncryptedState != nil
+//}
+
 func IsSEVESVMI(vmi *v1.VirtualMachineInstance) bool {
-	return IsSEVVMI(vmi) &&
-		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy != nil &&
-		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState != nil &&
-		*vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Policy.EncryptedState
+	logger := log.DefaultLogger()
+	if !IsSEVVMI(vmi) {
+		logger.Infof("VMI %s/%s: Not a SEV VMI, cannot be SEV-ES", vmi.Namespace, vmi.Name)
+		return false
+	}
+	logger.Infof("What is being requested is %v", vmi.Spec.Domain.LaunchSecurity.SEV)
+	if vmi.Spec.Domain.LaunchSecurity.SEV == nil {
+		logger.Infof("VMI %s/%s: LaunchSecurity.AMD.SEV is nil", vmi.Namespace, vmi.Name)
+		return false
+	}
+	if vmi.Spec.Domain.LaunchSecurity.SEV.Policy == nil {
+		logger.Infof("VMI %s/%s: SEV Policy is nil", vmi.Namespace, vmi.Name)
+		return false
+	}
+	if vmi.Spec.Domain.LaunchSecurity.SEV.Policy.EncryptedState == nil {
+		logger.Infof("VMI %s/%s: SEV Policy EncryptedState is nil", vmi.Namespace, vmi.Name)
+		return false
+	}
+	if !*vmi.Spec.Domain.LaunchSecurity.SEV.Policy.EncryptedState {
+		logger.Infof("VMI %s/%s: SEV EncryptedState is false", vmi.Namespace, vmi.Name)
+		return false
+	}
+	logger.Infof("VMI %s/%s: Detected as SEV-ES VMI", vmi.Namespace, vmi.Name)
+	return true
 }
 
 // Check if a VMI spec requests AMD SEV-SNP
 func IsSEVSNPVMI(vmi *v1.VirtualMachineInstance) bool {
-	return IsSEVVMI(vmi) &&
-		vmi.Spec.Domain.LaunchSecurity.AMD.SNP != nil &&
-		vmi.Spec.Domain.LaunchSecurity.AMD.SNP.Enabled != nil &&
-		*vmi.Spec.Domain.LaunchSecurity.AMD.SNP.Enabled
+	return vmi.Spec.Domain.LaunchSecurity != nil &&
+		vmi.Spec.Domain.LaunchSecurity.SNP != nil
 }
+
+//func IsSEVSNPVMI(vmi *v1.VirtualMachineInstance) bool {
+//	logger := log.DefaultLogger()
+//
+//	if !IsSEVVMI(vmi) {
+//		logger.Infof("VMI %s/%s: Not a SEV VMI, cannot be SEV-SNP", vmi.Namespace, vmi.Name)
+//		return false
+//	}
+//
+//	if vmi.Spec.Domain.LaunchSecurity.AMD.SNP == nil {
+//		logger.Infof("VMI %s/%s: LaunchSecurity.AMD.SNP is nil", vmi.Namespace, vmi.Name)
+//		return false
+//	}
+//
+//	if vmi.Spec.Domain.LaunchSecurity.AMD.SNP.Enabled == nil {
+//		logger.Infof("VMI %s/%s: SNP.Enabled is nil", vmi.Namespace, vmi.Name)
+//		return false
+//	}
+//
+//	if !*vmi.Spec.Domain.LaunchSecurity.AMD.SNP.Enabled {
+//		logger.Infof("VMI %s/%s: SNP.Enabled is false", vmi.Namespace, vmi.Name)
+//		return false
+//	}
+//
+//	logger.Infof("VMI %s/%s: Detected as SEV-SNP VMI", vmi.Namespace, vmi.Name)
+//	return true
+//}
 
 // Check if a VMI spec requests SEV with attestation
 func IsSEVAttestationRequested(vmi *v1.VirtualMachineInstance) bool {
-	return IsSEVVMI(vmi) && vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Attestation != nil
+	return vmi.Spec.Domain.LaunchSecurity.SEV.Attestation != nil
 }
 
 // NeedVirtioNetDevice checks whether a VMI requires the presence of the "virtio" net device.

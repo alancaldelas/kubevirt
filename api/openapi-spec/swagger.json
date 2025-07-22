@@ -12733,19 +12733,6 @@
      }
     }
    },
-   "v1.AMDLaunchSecurity": {
-    "type": "object",
-    "properties": {
-     "sev": {
-      "description": "AMD Secure Encrypted Virtualization (SEV).",
-      "$ref": "#/definitions/v1.SEV"
-     },
-     "snp": {
-      "description": "AMD SEV-SNP flags defined by the SEV-SNP specifications.",
-      "$ref": "#/definitions/v1.SEVSNP"
-     }
-    }
-   },
    "v1.AccessCredential": {
     "description": "AccessCredential represents a credential source that can be used to authorize remote access to the vm guest Only one of its members may be specified.",
     "type": "object",
@@ -15092,9 +15079,13 @@
    "v1.LaunchSecurity": {
     "type": "object",
     "properties": {
-     "amd": {
-      "description": "AMD Launch Security features.",
-      "$ref": "#/definitions/v1.AMDLaunchSecurity"
+     "sev": {
+      "description": "AMD Launch Security features. AMD Secure Encrypted Virtualization (SEV).",
+      "$ref": "#/definitions/v1.SEV"
+     },
+     "snp": {
+      "description": "AMD SEV-SNP flags defined by the SEV-SNP specifications.",
+      "$ref": "#/definitions/v1.SEVSNP"
      }
     }
    },
@@ -16140,11 +16131,7 @@
     "type": "object",
     "properties": {
      "authorKey": {
-      "description": "Whether idAuth contains AUTHOR_KEY field",
-      "type": "boolean"
-     },
-     "enabled": {
-      "description": "SEV-SNP is required. Defaults to false.",
+      "description": "Whether the guest is allowed to use VCEK for attestation reports. Set to false to disable VCEK usage.",
       "type": "boolean"
      },
      "guestVisibleWorkarounds": {
@@ -16152,7 +16139,7 @@
       "type": "string"
      },
      "hostData": {
-      "description": "32 byte base64 encoded measurement of the guest.",
+      "description": "32-byte base64 encoded user-defined blob to provide to the guest.",
       "type": "string"
      },
      "idAuth": {
@@ -16163,8 +16150,12 @@
       "description": "96-byte base64 encoded ID Block Structure.",
       "type": "string"
      },
+     "kernelHashes": {
+      "description": "Optional attribute to indicate whether the hashes of the kernel, and command line should be included in the measurement done by the firmware.",
+      "type": "boolean"
+     },
      "policy": {
-      "description": "64-bit SEV-SNP Policy",
+      "description": "64-bit SEV-SNP Guest Policy",
       "type": "string"
      },
      "vcek": {

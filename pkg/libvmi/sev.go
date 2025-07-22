@@ -22,11 +22,9 @@ import v1 "kubevirt.io/api/core/v1"
 func WithSEV(isESEnabled bool) Option {
 	return func(vmi *v1.VirtualMachineInstance) {
 		vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-			AMD: &v1.AMDLaunchSecurity{
-				SEV: &v1.SEV{
-					Policy: &v1.SEVPolicy{
-						EncryptedState: &isESEnabled,
-					},
+			SEV: &v1.SEV{
+				Policy: &v1.SEVPolicy{
+					EncryptedState: &isESEnabled,
 				},
 			},
 		}
@@ -40,13 +38,13 @@ func WithSEVAttestation() Option {
 		if vmi.Spec.Domain.LaunchSecurity == nil {
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{}
 		}
-		if vmi.Spec.Domain.LaunchSecurity.AMD == nil {
-			vmi.Spec.Domain.LaunchSecurity.AMD = &v1.AMDLaunchSecurity{}
+		if vmi.Spec.Domain.LaunchSecurity == nil {
+			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{}
 		}
-		if vmi.Spec.Domain.LaunchSecurity.AMD.SEV == nil {
-			vmi.Spec.Domain.LaunchSecurity.AMD.SEV = &v1.SEV{}
+		if vmi.Spec.Domain.LaunchSecurity.SEV == nil {
+			vmi.Spec.Domain.LaunchSecurity.SEV = &v1.SEV{}
 		}
-		vmi.Spec.Domain.LaunchSecurity.AMD.SEV.Attestation = &v1.SEVAttestation{}
+		vmi.Spec.Domain.LaunchSecurity.SEV.Attestation = &v1.SEVAttestation{}
 	}
 }
 
@@ -54,11 +52,7 @@ func WithSEVAttestation() Option {
 func WithSEVSNP(isSNPEnabled bool) Option {
 	return func(vmi *v1.VirtualMachineInstance) {
 		vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-			AMD: &v1.AMDLaunchSecurity{
-				SNP: &v1.SEVSNP{
-					Enabled: &isSNPEnabled,
-				},
-			},
+			SNP: &v1.SEVSNP{},
 		}
 	}
 }

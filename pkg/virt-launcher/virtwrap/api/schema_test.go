@@ -411,19 +411,17 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 	ginkgo.Context("XML marshalling and unmarshalling", func() {
 		ginkgo.It("should marshal SEV-SNP launch security with all fields", func() {
 			launchSecurity := &LaunchSecurity{
-				Type: "sev-snp",
-				AMD: &AMDLaunchSecurity{
-					Policy:          "0x30000",
-					AuthorKey:       "yes",
-					VCEK:            "yes",
-					IdAuth:          "test-id-auth",
-					IdBlock:         "test-id-block",
-					HostData:        "test-host-data",
-					DHCert:          "test-dh-cert",
-					Session:         "test-session",
-					Cbitpos:         "51",
-					ReducedPhysBits: "1",
-				},
+				Type:            "sev-snp",
+				Policy:          "0x30000",
+				AuthorKey:       true,
+				VCEK:            true,
+				IdAuth:          "test-id-auth",
+				IdBlock:         "test-id-block",
+				HostData:        "test-host-data",
+				DHCert:          "test-dh-cert",
+				Session:         "test-session",
+				Cbitpos:         "51",
+				ReducedPhysBits: "1",
 			}
 
 			xmlBytes, err := xml.Marshal(launchSecurity)
@@ -441,25 +439,22 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(launchSecurity.Type).To(Equal("sev-snp"))
-			Expect(launchSecurity.AMD).ToNot(BeNil())
-			Expect(launchSecurity.AMD.Policy).To(Equal("0x30000"))
-			Expect(launchSecurity.AMD.AuthorKey).To(Equal("yes"))
-			Expect(launchSecurity.AMD.VCEK).To(Equal("yes"))
-			Expect(launchSecurity.AMD.IdAuth).To(Equal("test-id-auth"))
-			Expect(launchSecurity.AMD.IdBlock).To(Equal("test-id-block"))
-			Expect(launchSecurity.AMD.HostData).To(Equal("test-host-data"))
-			Expect(launchSecurity.AMD.DHCert).To(Equal("test-dh-cert"))
-			Expect(launchSecurity.AMD.Session).To(Equal("test-session"))
-			Expect(launchSecurity.AMD.Cbitpos).To(Equal("51"))
-			Expect(launchSecurity.AMD.ReducedPhysBits).To(Equal("1"))
+			Expect(launchSecurity.Policy).To(Equal("0x30000"))
+			Expect(launchSecurity.AuthorKey).To(Equal("yes"))
+			Expect(launchSecurity.VCEK).To(Equal("yes"))
+			Expect(launchSecurity.IdAuth).To(Equal("test-id-auth"))
+			Expect(launchSecurity.IdBlock).To(Equal("test-id-block"))
+			Expect(launchSecurity.HostData).To(Equal("test-host-data"))
+			Expect(launchSecurity.DHCert).To(Equal("test-dh-cert"))
+			Expect(launchSecurity.Session).To(Equal("test-session"))
+			Expect(launchSecurity.Cbitpos).To(Equal("51"))
+			Expect(launchSecurity.ReducedPhysBits).To(Equal("1"))
 		})
 
 		ginkgo.It("should marshal SEV-SNP launch security with minimal fields", func() {
 			launchSecurity := &LaunchSecurity{
-				Type: "sev-snp",
-				AMD: &AMDLaunchSecurity{
-					Policy: "0x30000",
-				},
+				Type:   "sev-snp",
+				Policy: "0x30000",
 			}
 
 			xmlBytes, err := xml.Marshal(launchSecurity)
@@ -477,19 +472,17 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 			Expect(err).ToNot(HaveOccurred())
 
 			Expect(launchSecurity.Type).To(Equal("sev-snp"))
-			Expect(launchSecurity.AMD).ToNot(BeNil())
-			Expect(launchSecurity.AMD.Policy).To(Equal("0x30000"))
-			Expect(launchSecurity.AMD.AuthorKey).To(BeEmpty())
-			Expect(launchSecurity.AMD.VCEK).To(BeEmpty())
-			Expect(launchSecurity.AMD.IdAuth).To(BeEmpty())
-			Expect(launchSecurity.AMD.IdBlock).To(BeEmpty())
-			Expect(launchSecurity.AMD.HostData).To(BeEmpty())
+			Expect(launchSecurity.Policy).To(Equal("0x30000"))
+			Expect(launchSecurity.AuthorKey).To(BeEmpty())
+			Expect(launchSecurity.VCEK).To(BeEmpty())
+			Expect(launchSecurity.IdAuth).To(BeEmpty())
+			Expect(launchSecurity.IdBlock).To(BeEmpty())
+			Expect(launchSecurity.HostData).To(BeEmpty())
 		})
 
-		ginkgo.It("should handle empty AMD structure", func() {
+		ginkgo.It("should handle empty structure", func() {
 			launchSecurity := &LaunchSecurity{
 				Type: "sev-snp",
-				AMD:  &AMDLaunchSecurity{},
 			}
 
 			xmlBytes, err := xml.Marshal(launchSecurity)
@@ -499,10 +492,9 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 			Expect(string(xmlBytes)).To(Equal(expectedXML))
 		})
 
-		ginkgo.It("should handle nil AMD structure", func() {
+		ginkgo.It("should handle minimal structure", func() {
 			launchSecurity := &LaunchSecurity{
 				Type: "sev-snp",
-				AMD:  nil,
 			}
 
 			xmlBytes, err := xml.Marshal(launchSecurity)
@@ -517,15 +509,14 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 		ginkgo.It("should marshal domain with SEV-SNP launch security", func() {
 			domain := NewMinimalDomainSpec("test-domain")
 			domain.LaunchSecurity = &LaunchSecurity{
-				Type: "sev-snp",
-				AMD: &AMDLaunchSecurity{
-					Policy:    "0x30000",
-					AuthorKey: "yes",
-					VCEK:      "yes",
-					IdAuth:    "test-id-auth",
-					IdBlock:   "test-id-block",
-					HostData:  "test-host-data",
-				},
+				Type:         "sev-snp",
+				Policy:       "0x30000",
+				AuthorKey:    true,
+				VCEK:         true,
+				KernelHashes: true,
+				IdAuth:       "test-id-auth",
+				IdBlock:      "test-id-block",
+				HostData:     "test-host-data",
 			}
 
 			xmlBytes, err := xml.Marshal(domain)
@@ -570,25 +561,22 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 
 			Expect(domain.LaunchSecurity).ToNot(BeNil())
 			Expect(domain.LaunchSecurity.Type).To(Equal("sev-snp"))
-			Expect(domain.LaunchSecurity.AMD).ToNot(BeNil())
-			Expect(domain.LaunchSecurity.AMD.Policy).To(Equal("0x30000"))
-			Expect(domain.LaunchSecurity.AMD.AuthorKey).To(Equal("yes"))
-			Expect(domain.LaunchSecurity.AMD.VCEK).To(Equal("yes"))
-			Expect(domain.LaunchSecurity.AMD.IdAuth).To(Equal("test-id-auth"))
-			Expect(domain.LaunchSecurity.AMD.IdBlock).To(Equal("test-id-block"))
-			Expect(domain.LaunchSecurity.AMD.HostData).To(Equal("test-host-data"))
+			Expect(domain.LaunchSecurity.Policy).To(Equal("0x30000"))
+			Expect(domain.LaunchSecurity.AuthorKey).To(Equal("yes"))
+			Expect(domain.LaunchSecurity.VCEK).To(Equal("yes"))
+			Expect(domain.LaunchSecurity.IdAuth).To(Equal("test-id-auth"))
+			Expect(domain.LaunchSecurity.IdBlock).To(Equal("test-id-block"))
+			Expect(domain.LaunchSecurity.HostData).To(Equal("test-host-data"))
 		})
 	})
 
 	ginkgo.Context("SEV vs SEV-SNP differentiation", func() {
 		ginkgo.It("should handle regular SEV launch security", func() {
 			launchSecurity := &LaunchSecurity{
-				Type: "sev",
-				AMD: &AMDLaunchSecurity{
-					Policy:  "0x0001",
-					DHCert:  "test-dh-cert",
-					Session: "test-session",
-				},
+				Type:    "sev",
+				Policy:  "0x0001",
+				DHCert:  "test-dh-cert",
+				Session: "test-session",
 			}
 
 			xmlBytes, err := xml.Marshal(launchSecurity)
@@ -600,17 +588,13 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 
 		ginkgo.It("should differentiate between SEV and SEV-SNP types", func() {
 			sevLaunchSecurity := &LaunchSecurity{
-				Type: "sev",
-				AMD: &AMDLaunchSecurity{
-					Policy: "0x0001",
-				},
+				Type:   "sev",
+				Policy: "0x0001",
 			}
 
 			sevSnpLaunchSecurity := &LaunchSecurity{
-				Type: "sev-snp",
-				AMD: &AMDLaunchSecurity{
-					Policy: "0x30000",
-				},
+				Type:   "sev-snp",
+				Policy: "0x30000",
 			}
 
 			sevXML, err := xml.Marshal(sevLaunchSecurity)
