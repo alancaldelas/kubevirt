@@ -1271,11 +1271,7 @@ var _ = Describe("Template", func() {
 
 				It("should add SEV and SEV-SNP node label selector with SEV-SNP workload", func() {
 					vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
-						SEV: &v1.SEV{
-							Policy: &v1.SEVPolicy{
-								SecureNestedPaging: pointer.P(true),
-							},
-						},
+						SNP: &v1.SEVSNP{},
 					}
 
 					pod, err := svc.RenderLaunchManifest(vmi)

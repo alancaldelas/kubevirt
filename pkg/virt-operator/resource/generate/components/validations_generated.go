@@ -6892,15 +6892,45 @@ var CRDsValidation map[string]string = map[string]string{
                                     SEV-ES is required.
                                     Defaults to false.
                                   type: boolean
-                                secureNestedPaging:
-                                  description: |-
-                                    SEV-SNP is required.
-                                    Defaults to false.
-                                  type: boolean
                               type: object
                             session:
                               description: Base64 encoded session blob.
                               type: string
+                          type: object
+                        snp:
+                          description: AMD SEV-SNP flags defined by the SEV-SNP specifications.
+                          properties:
+                            authorKey:
+                              description: Whether the guest is allowed to use VCEK
+                                for attestation reports. Set to false to disable VCEK
+                                usage.
+                              type: boolean
+                            guestVisibleWorkarounds:
+                              description: 16-byte base64 encoded guest hypervisor-defined
+                                workarounds.
+                              type: string
+                            hostData:
+                              description: 32-byte base64 encoded user-defined blob
+                                to provide to the guest.
+                              type: string
+                            idAuth:
+                              description: 4096-byte base64 encoded ID Auth Structure.
+                              type: string
+                            idBlock:
+                              description: 96-byte base64 encoded ID Block Structure.
+                              type: string
+                            kernelHashes:
+                              description: Optional attribute to indicate whether
+                                the hashes of the kernel, and command line should
+                                be included in the measurement done by the firmware.
+                              type: boolean
+                            policy:
+                              description: 64-bit SEV-SNP Guest Policy
+                              type: string
+                            vcek:
+                              description: Whether idAuth contains VCEK field for
+                                attestation
+                              type: boolean
                           type: object
                       type: object
                     machine:
@@ -8986,15 +9016,42 @@ var CRDsValidation map[string]string = map[string]string{
                         SEV-ES is required.
                         Defaults to false.
                       type: boolean
-                    secureNestedPaging:
-                      description: |-
-                        SEV-SNP is required.
-                        Defaults to false.
-                      type: boolean
                   type: object
                 session:
                   description: Base64 encoded session blob.
                   type: string
+              type: object
+            snp:
+              description: AMD SEV-SNP flags defined by the SEV-SNP specifications.
+              properties:
+                authorKey:
+                  description: Whether the guest is allowed to use VCEK for attestation
+                    reports. Set to false to disable VCEK usage.
+                  type: boolean
+                guestVisibleWorkarounds:
+                  description: 16-byte base64 encoded guest hypervisor-defined workarounds.
+                  type: string
+                hostData:
+                  description: 32-byte base64 encoded user-defined blob to provide
+                    to the guest.
+                  type: string
+                idAuth:
+                  description: 4096-byte base64 encoded ID Auth Structure.
+                  type: string
+                idBlock:
+                  description: 96-byte base64 encoded ID Block Structure.
+                  type: string
+                kernelHashes:
+                  description: Optional attribute to indicate whether the hashes of
+                    the kernel, and command line should be included in the measurement
+                    done by the firmware.
+                  type: boolean
+                policy:
+                  description: 64-bit SEV-SNP Guest Policy
+                  type: string
+                vcek:
+                  description: Whether idAuth contains VCEK field for attestation
+                  type: boolean
               type: object
           type: object
         memory:
@@ -12214,15 +12271,43 @@ var CRDsValidation map[string]string = map[string]string{
                             SEV-ES is required.
                             Defaults to false.
                           type: boolean
-                        secureNestedPaging:
-                          description: |-
-                            SEV-SNP is required.
-                            Defaults to false.
-                          type: boolean
                       type: object
                     session:
                       description: Base64 encoded session blob.
                       type: string
+                  type: object
+                snp:
+                  description: AMD SEV-SNP flags defined by the SEV-SNP specifications.
+                  properties:
+                    authorKey:
+                      description: Whether the guest is allowed to use VCEK for attestation
+                        reports. Set to false to disable VCEK usage.
+                      type: boolean
+                    guestVisibleWorkarounds:
+                      description: 16-byte base64 encoded guest hypervisor-defined
+                        workarounds.
+                      type: string
+                    hostData:
+                      description: 32-byte base64 encoded user-defined blob to provide
+                        to the guest.
+                      type: string
+                    idAuth:
+                      description: 4096-byte base64 encoded ID Auth Structure.
+                      type: string
+                    idBlock:
+                      description: 96-byte base64 encoded ID Block Structure.
+                      type: string
+                    kernelHashes:
+                      description: Optional attribute to indicate whether the hashes
+                        of the kernel, and command line should be included in the
+                        measurement done by the firmware.
+                      type: boolean
+                    policy:
+                      description: 64-bit SEV-SNP Guest Policy
+                      type: string
+                    vcek:
+                      description: Whether idAuth contains VCEK field for attestation
+                      type: boolean
                   type: object
               type: object
             machine:
@@ -15681,15 +15766,43 @@ var CRDsValidation map[string]string = map[string]string{
                             SEV-ES is required.
                             Defaults to false.
                           type: boolean
-                        secureNestedPaging:
-                          description: |-
-                            SEV-SNP is required.
-                            Defaults to false.
-                          type: boolean
                       type: object
                     session:
                       description: Base64 encoded session blob.
                       type: string
+                  type: object
+                snp:
+                  description: AMD SEV-SNP flags defined by the SEV-SNP specifications.
+                  properties:
+                    authorKey:
+                      description: Whether the guest is allowed to use VCEK for attestation
+                        reports. Set to false to disable VCEK usage.
+                      type: boolean
+                    guestVisibleWorkarounds:
+                      description: 16-byte base64 encoded guest hypervisor-defined
+                        workarounds.
+                      type: string
+                    hostData:
+                      description: 32-byte base64 encoded user-defined blob to provide
+                        to the guest.
+                      type: string
+                    idAuth:
+                      description: 4096-byte base64 encoded ID Auth Structure.
+                      type: string
+                    idBlock:
+                      description: 96-byte base64 encoded ID Block Structure.
+                      type: string
+                    kernelHashes:
+                      description: Optional attribute to indicate whether the hashes
+                        of the kernel, and command line should be included in the
+                        measurement done by the firmware.
+                      type: boolean
+                    policy:
+                      description: 64-bit SEV-SNP Guest Policy
+                      type: string
+                    vcek:
+                      description: Whether idAuth contains VCEK field for attestation
+                      type: boolean
                   type: object
               type: object
             machine:
@@ -18134,15 +18247,45 @@ var CRDsValidation map[string]string = map[string]string{
                                     SEV-ES is required.
                                     Defaults to false.
                                   type: boolean
-                                secureNestedPaging:
-                                  description: |-
-                                    SEV-SNP is required.
-                                    Defaults to false.
-                                  type: boolean
                               type: object
                             session:
                               description: Base64 encoded session blob.
                               type: string
+                          type: object
+                        snp:
+                          description: AMD SEV-SNP flags defined by the SEV-SNP specifications.
+                          properties:
+                            authorKey:
+                              description: Whether the guest is allowed to use VCEK
+                                for attestation reports. Set to false to disable VCEK
+                                usage.
+                              type: boolean
+                            guestVisibleWorkarounds:
+                              description: 16-byte base64 encoded guest hypervisor-defined
+                                workarounds.
+                              type: string
+                            hostData:
+                              description: 32-byte base64 encoded user-defined blob
+                                to provide to the guest.
+                              type: string
+                            idAuth:
+                              description: 4096-byte base64 encoded ID Auth Structure.
+                              type: string
+                            idBlock:
+                              description: 96-byte base64 encoded ID Block Structure.
+                              type: string
+                            kernelHashes:
+                              description: Optional attribute to indicate whether
+                                the hashes of the kernel, and command line should
+                                be included in the measurement done by the firmware.
+                              type: boolean
+                            policy:
+                              description: 64-bit SEV-SNP Guest Policy
+                              type: string
+                            vcek:
+                              description: Whether idAuth contains VCEK field for
+                                attestation
+                              type: boolean
                           type: object
                       type: object
                     machine:
@@ -19496,15 +19639,42 @@ var CRDsValidation map[string]string = map[string]string{
                         SEV-ES is required.
                         Defaults to false.
                       type: boolean
-                    secureNestedPaging:
-                      description: |-
-                        SEV-SNP is required.
-                        Defaults to false.
-                      type: boolean
                   type: object
                 session:
                   description: Base64 encoded session blob.
                   type: string
+              type: object
+            snp:
+              description: AMD SEV-SNP flags defined by the SEV-SNP specifications.
+              properties:
+                authorKey:
+                  description: Whether the guest is allowed to use VCEK for attestation
+                    reports. Set to false to disable VCEK usage.
+                  type: boolean
+                guestVisibleWorkarounds:
+                  description: 16-byte base64 encoded guest hypervisor-defined workarounds.
+                  type: string
+                hostData:
+                  description: 32-byte base64 encoded user-defined blob to provide
+                    to the guest.
+                  type: string
+                idAuth:
+                  description: 4096-byte base64 encoded ID Auth Structure.
+                  type: string
+                idBlock:
+                  description: 96-byte base64 encoded ID Block Structure.
+                  type: string
+                kernelHashes:
+                  description: Optional attribute to indicate whether the hashes of
+                    the kernel, and command line should be included in the measurement
+                    done by the firmware.
+                  type: boolean
+                policy:
+                  description: 64-bit SEV-SNP Guest Policy
+                  type: string
+                vcek:
+                  description: Whether idAuth contains VCEK field for attestation
+                  type: boolean
               type: object
           type: object
         memory:
@@ -22681,15 +22851,49 @@ var CRDsValidation map[string]string = map[string]string{
                                             SEV-ES is required.
                                             Defaults to false.
                                           type: boolean
-                                        secureNestedPaging:
-                                          description: |-
-                                            SEV-SNP is required.
-                                            Defaults to false.
-                                          type: boolean
                                       type: object
                                     session:
                                       description: Base64 encoded session blob.
                                       type: string
+                                  type: object
+                                snp:
+                                  description: AMD SEV-SNP flags defined by the SEV-SNP
+                                    specifications.
+                                  properties:
+                                    authorKey:
+                                      description: Whether the guest is allowed to
+                                        use VCEK for attestation reports. Set to false
+                                        to disable VCEK usage.
+                                      type: boolean
+                                    guestVisibleWorkarounds:
+                                      description: 16-byte base64 encoded guest hypervisor-defined
+                                        workarounds.
+                                      type: string
+                                    hostData:
+                                      description: 32-byte base64 encoded user-defined
+                                        blob to provide to the guest.
+                                      type: string
+                                    idAuth:
+                                      description: 4096-byte base64 encoded ID Auth
+                                        Structure.
+                                      type: string
+                                    idBlock:
+                                      description: 96-byte base64 encoded ID Block
+                                        Structure.
+                                      type: string
+                                    kernelHashes:
+                                      description: Optional attribute to indicate
+                                        whether the hashes of the kernel, and command
+                                        line should be included in the measurement
+                                        done by the firmware.
+                                      type: boolean
+                                    policy:
+                                      description: 64-bit SEV-SNP Guest Policy
+                                      type: string
+                                    vcek:
+                                      description: Whether idAuth contains VCEK field
+                                        for attestation
+                                      type: boolean
                                   type: object
                               type: object
                             machine:
@@ -27906,15 +28110,49 @@ var CRDsValidation map[string]string = map[string]string{
                                                 SEV-ES is required.
                                                 Defaults to false.
                                               type: boolean
-                                            secureNestedPaging:
-                                              description: |-
-                                                SEV-SNP is required.
-                                                Defaults to false.
-                                              type: boolean
                                           type: object
                                         session:
                                           description: Base64 encoded session blob.
                                           type: string
+                                      type: object
+                                    snp:
+                                      description: AMD SEV-SNP flags defined by the
+                                        SEV-SNP specifications.
+                                      properties:
+                                        authorKey:
+                                          description: Whether the guest is allowed
+                                            to use VCEK for attestation reports. Set
+                                            to false to disable VCEK usage.
+                                          type: boolean
+                                        guestVisibleWorkarounds:
+                                          description: 16-byte base64 encoded guest
+                                            hypervisor-defined workarounds.
+                                          type: string
+                                        hostData:
+                                          description: 32-byte base64 encoded user-defined
+                                            blob to provide to the guest.
+                                          type: string
+                                        idAuth:
+                                          description: 4096-byte base64 encoded ID
+                                            Auth Structure.
+                                          type: string
+                                        idBlock:
+                                          description: 96-byte base64 encoded ID Block
+                                            Structure.
+                                          type: string
+                                        kernelHashes:
+                                          description: Optional attribute to indicate
+                                            whether the hashes of the kernel, and
+                                            command line should be included in the
+                                            measurement done by the firmware.
+                                          type: boolean
+                                        policy:
+                                          description: 64-bit SEV-SNP Guest Policy
+                                          type: string
+                                        vcek:
+                                          description: Whether idAuth contains VCEK
+                                            field for attestation
+                                          type: boolean
                                       type: object
                                   type: object
                                 machine:
