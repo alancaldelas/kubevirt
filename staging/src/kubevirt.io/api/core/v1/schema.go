@@ -735,6 +735,12 @@ type SEV struct {
 	Session string `json:"session,omitempty"`
 	// Base64 encoded guest owner's Diffie-Hellman key.
 	DHCert string `json:"dhCert,omitempty"`
+	// Cbitpos defines the C-bit position for the SEV guest.
+	// +optional
+	Cbitpos *string `json:"cbitpos,omitempty"`
+	// ReducedPhysBits defines the number of reduced physical bits for the SEV guest.
+	// +optional
+	ReducedPhysBits *string `json:"reducedPhysBits,omitempty"`
 }
 
 type SEVPolicy struct {

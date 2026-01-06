@@ -3256,6 +3256,21 @@ var _ = Describe("Converter", func() {
 			Expect(domain.Spec.LaunchSecurity.Policy).To(Equal("0x" + strconv.FormatUint(uint64(sev.SEVPolicyNoDebug|sev.SEVPolicyEncryptedState), 16)))
 		})
 
+		It("should set LaunchSecurity domain element with 'sev' type and additional configuration", func() {
+			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{
+				SEV: &v1.SEV{
+					Cbitpos:         pointer.P("47"),
+					ReducedPhysBits: pointer.P("1"),
+				},
+			}
+
+			domain := vmiToDomain(vmi, c)
+			Expect(domain.Spec.LaunchSecurity).ToNot(BeNil())
+			Expect(domain.Spec.LaunchSecurity.Type).To(Equal("sev"))
+			Expect(domain.Spec.LaunchSecurity.Cbitpos).To(Equal("47"))
+			Expect(domain.Spec.LaunchSecurity.ReducedPhysBits).To(Equal("1"))
+		})
+
 		It("should set LaunchSecurity domain element with 'sev-snp' type with 'Reserved' policy bits", func() {
 			// VMI with SEV-SNP
 			vmi.Spec.Domain.LaunchSecurity = &v1.LaunchSecurity{

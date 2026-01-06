@@ -411,17 +411,21 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 	ginkgo.Context("XML marshalling and unmarshalling", func() {
 		ginkgo.It("should marshal SEV-SNP launch security with all fields", func() {
 			launchSecurity := &LaunchSecurity{
-				Type:            "sev-snp",
-				Policy:          "0x30000",
-				AuthorKey:       "yes",
-				VCEK:            "yes",
-				IdAuth:          "test-id-auth",
-				IdBlock:         "test-id-block",
-				HostData:        "test-host-data",
-				DHCert:          "test-dh-cert",
-				Session:         "test-session",
-				Cbitpos:         "51",
-				ReducedPhysBits: "1",
+				Type:   "sev-snp",
+				Policy: "0x30000",
+				LaunchSecuritySNP: LaunchSecuritySNP{
+					AuthorKey:    "yes",
+					VCEK:         "yes",
+					IdAuth:       "test-id-auth",
+					IdBlock:      "test-id-block",
+					HostData:     "test-host-data",
+				},
+				LaunchSecuritySEV: LaunchSecuritySEV{
+					DHCert:          "test-dh-cert",
+					Session:         "test-session",
+					Cbitpos:         "51",
+					ReducedPhysBits: "1",
+				},
 			}
 
 			xmlBytes, err := xml.Marshal(launchSecurity)
@@ -508,14 +512,16 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 		ginkgo.It("should marshal domain with SEV-SNP launch security", func() {
 			domain := NewMinimalDomainSpec("test-domain")
 			domain.LaunchSecurity = &LaunchSecurity{
-				Type:         "sev-snp",
-				Policy:       "0x30000",
-				AuthorKey:    "yes",
-				VCEK:         "yes",
-				KernelHashes: "yes",
-				IdAuth:       "test-id-auth",
-				IdBlock:      "test-id-block",
-				HostData:     "test-host-data",
+				Type:   "sev-snp",
+				Policy: "0x30000",
+				LaunchSecuritySNP: LaunchSecuritySNP{
+					AuthorKey:    "yes",
+					VCEK:         "yes",
+					KernelHashes: "yes",
+					IdAuth:       "test-id-auth",
+					IdBlock:      "test-id-block",
+					HostData:     "test-host-data",
+				},
 			}
 
 			xmlBytes, err := xml.Marshal(domain)
@@ -571,10 +577,12 @@ var _ = ginkgo.Describe("LaunchSecurity SEV-SNP", func() {
 	ginkgo.Context("SEV vs SEV-SNP differentiation", func() {
 		ginkgo.It("should handle regular SEV launch security", func() {
 			launchSecurity := &LaunchSecurity{
-				Type:    "sev",
-				Policy:  "0x0001",
-				DHCert:  "test-dh-cert",
-				Session: "test-session",
+				Type:   "sev",
+				Policy: "0x0001",
+				LaunchSecuritySEV: LaunchSecuritySEV{
+					DHCert:  "test-dh-cert",
+					Session: "test-session",
+				},
 			}
 
 			xmlBytes, err := xml.Marshal(launchSecurity)

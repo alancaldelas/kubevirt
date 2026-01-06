@@ -1479,6 +1479,7 @@ func Convert_v1_VirtualMachineInstance_To_api_Domain(vmi *v1.VirtualMachineInsta
 			snpPolicyBits := launchsecurity.SEVSNPPolicyToBits(launchSec.SNP)
 			domain.Spec.LaunchSecurity = &api.LaunchSecurity{
 				Type: "sev-snp",
+				LaunchSecuritySNP: api.LaunchSecuritySNP{},
 			}
 			if launchSec.SNP.Policy != nil {
 				domain.Spec.LaunchSecurity.Policy = *launchSec.SNP.Policy
@@ -1506,12 +1507,19 @@ func Convert_v1_VirtualMachineInstance_To_api_Domain(vmi *v1.VirtualMachineInsta
 			domain.Spec.LaunchSecurity = &api.LaunchSecurity{
 				Type:   "sev",
 				Policy: "0x" + strconv.FormatUint(uint64(sevPolicyBits), 16),
+				LaunchSecuritySEV: api.LaunchSecuritySEV{},
 			}
 			if launchSec.SEV.DHCert != "" {
 				domain.Spec.LaunchSecurity.DHCert = launchSec.SEV.DHCert
 			}
 			if launchSec.SEV.Session != "" {
 				domain.Spec.LaunchSecurity.Session = launchSec.SEV.Session
+			}
+			if launchSec.SEV.Cbitpos != nil {
+				domain.Spec.LaunchSecurity.Cbitpos = *launchSec.SEV.Cbitpos
+			}
+			if launchSec.SEV.ReducedPhysBits != nil {
+				domain.Spec.LaunchSecurity.ReducedPhysBits = *launchSec.SEV.ReducedPhysBits
 			}
 		}
 
