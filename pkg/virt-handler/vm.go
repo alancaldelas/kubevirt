@@ -454,8 +454,17 @@ func (c *VirtualMachineController) reconcileGhostRecordConflict(vmi *v1.VirtualM
 	// unresponsive marker is present (or cannot be looked up), so a transient
 	// connection failure never condemns the old incarnation.
 	if !cmdclient.IsSocketUnresponsive(record.SocketFile) {
-		// The older incarnation may still be alive; leave the key to the existing flow.
-		return false, nil
+		if !c.isVMIOwnedByNode(vmi) {
+			// This node will not start the VMI, so there is nothing to block.
+			return false, nil
+		}
+		// Final or deleting VMIs are blocked too: their cleanup in sync()
+		// removes the ghost record by name, which would delete the record of an
+		// older incarnation that may still be alive.
+		c.recorder.Eventf(vmi, k8sv1.EventTypeWarning, vmiIncarnationConflictReason,
+			"Waiting for older VMI incarnation %s to terminate before starting %s", record.UID, vmi.UID)
+		return true, fmt.Errorf("vmi %s/%s with uid %s is blocked by the ghost record of uid %s whose launcher socket %s is still present",
+			vmi.Namespace, vmi.Name, vmi.UID, record.UID, record.SocketFile)
 	}
 
 	oldVMI := v1.NewVMIReferenceFromNameWithNS(vmi.Namespace, vmi.Name)
