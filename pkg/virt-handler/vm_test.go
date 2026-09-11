@@ -3655,6 +3655,97 @@ var _ = Describe("VirtualMachineInstance", func() {
 		)
 	})
 
+	Context("ghost record left by an older VMI incarnation", func() {
+		// kubevirt#7032: the old virt-launcher vanished before cleanup, so no live
+		// domain remains to trigger the stale-domain branch in execute(), while
+		// the ghost record for the old UID persists and blocks the new UID.
+		var staleUID types.UID
+		var staleSocket string
+
+		BeforeEach(func() {
+			staleUID = uuid.NewUUID()
+			staleSocket = cmdclient.SocketFilePathOnHost(string(uuid.NewUUID()))
+			// Keep the fallback sync path quiet (AddAfter only), so a run without
+			// the reconciliation fails on the assertions below.
+			controller.launcherClients = &launcherclients.MockLauncherClientManager{Initialized: false}
+		})
+
+		plantStaleRecord := func() {
+			Expect(virtcache.GhostRecordGlobalStore.Add(metav1.NamespaceDefault, "testvmi", staleSocket, staleUID)).To(Succeed())
+		}
+
+		createLiveStaleSocket := func() {
+			Expect(os.MkdirAll(filepath.Dir(staleSocket), 0755)).To(Succeed())
+			f, err := os.Create(staleSocket)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(f.Close()).To(Succeed())
+		}
+
+		DescribeTable("cleans up a dead older incarnation so the new VMI can register", func(prepare func()) {
+			plantStaleRecord()
+			prepare()
+
+			vmi := NewScheduledVMI(vmiTestUUID, podTestUUID, host)
+			createVMI(vmi)
+			mockHotplugVolumeMounter.EXPECT().UnmountAll(gomock.Any(), mockCgroupManager).Return(nil)
+
+			sanityExecuteNoDomain()
+
+			Expect(virtcache.GhostRecordGlobalStore.Exists(vmi.Namespace, vmi.Name)).To(BeFalse(),
+				"the ghost record of the dead incarnation must be removed")
+			Expect(controller.domainStore.List()).To(BeEmpty())
+			Expect(mockQueue.GetRateLimitedEnqueueCount()).To(Equal(0))
+			Expect(mockQueue.GetAddAfterEnqueueCount()).To(Equal(1))
+			Expect(virtcache.GhostRecordGlobalStore.Add(vmi.Namespace, vmi.Name, sockFile, vmi.UID)).To(Succeed(),
+				"the new incarnation must be able to register its ghost record")
+		},
+			Entry("when the launcher socket directory is gone and no domain is cached", func() {}),
+			Entry("when the launcher socket directory is gone and the cached domain is marked deleted", func() {
+				domain := api.NewMinimalDomainWithUUID("testvmi", staleUID)
+				now := metav1.Now()
+				domain.DeletionTimestamp = &now
+				addDomain(domain)
+			}),
+			Entry("when the domain watcher marked the launcher socket unresponsive", func() {
+				createLiveStaleSocket()
+				Expect(cmdclient.MarkSocketUnresponsive(staleSocket)).To(Succeed())
+			}),
+		)
+
+		It("cleans up a dead older incarnation even when the new VMI is owned by another node", func() {
+			plantStaleRecord()
+
+			vmi := api2.NewMinimalVMI("testvmi")
+			vmi.UID = vmiTestUUID
+			vmi.Status.Phase = v1.Running
+			vmi.Status.NodeName = "othernode"
+			vmi.Labels = map[string]string{v1.NodeNameLabel: "othernode"}
+			createVMI(vmi)
+			mockHotplugVolumeMounter.EXPECT().UnmountAll(gomock.Any(), mockCgroupManager).Return(nil)
+
+			sanityExecuteNoDomain()
+
+			Expect(virtcache.GhostRecordGlobalStore.Exists(vmi.Namespace, vmi.Name)).To(BeFalse(),
+				"a dead older incarnation's record must be removed even if this node will not run the new VMI")
+			Expect(mockQueue.GetRateLimitedEnqueueCount()).To(Equal(0))
+			Expect(mockQueue.GetAddAfterEnqueueCount()).To(Equal(1))
+		})
+
+		It("keeps the older incarnation's ghost record and retries when cleanup fails", func() {
+			plantStaleRecord()
+
+			vmi := NewScheduledVMI(vmiTestUUID, podTestUUID, host)
+			createVMI(vmi)
+			mockHotplugVolumeMounter.EXPECT().UnmountAll(gomock.Any(), mockCgroupManager).Return(fmt.Errorf("unmount failed"))
+
+			sanityExecute()
+
+			Expect(virtcache.GhostRecordGlobalStore.Exists(vmi.Namespace, vmi.Name)).To(BeTrue(),
+				"the record must survive so the next attempt still sees the stale incarnation")
+			Expect(mockQueue.GetRateLimitedEnqueueCount()).To(Equal(1))
+		})
+	})
+
 	Context("updateBackupStatus", func() {
 		startTime := metav1.Now()
 		endTime := metav1.NewTime(startTime.Add(5 * time.Minute))
